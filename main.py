@@ -11,8 +11,8 @@ test_font = pygame.font.Font(None, 50)
 gameRun = True
 
 # create player & put it in GroupSingle
-brat = pygame.sprite.GroupSingle()
-brat.add(Player(10,10))
+brat = Player(10,10)
+brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
 platform1 = Platform(-1000, 55, 2000, 20)
 platforms_group = pygame.sprite.Group()
@@ -31,7 +31,7 @@ while gameRun:
     # draw things idk
     screen.fill('White')
     platforms_group.draw(screen)
-    brat.draw(screen)
+    brat.draws(screen)
 
     # update the screen
     pygame.display.update()

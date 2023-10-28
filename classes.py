@@ -7,7 +7,7 @@ from pygame.sprite import Sprite
 class Player(Sprite):
     def __init__(self, x, y):
         super().__init__()
-
+        self.brat_idle = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
         self.image = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -25,8 +25,10 @@ class Player(Sprite):
         # Adjust horizontal velocity based on key presses
         if keys[pygame.K_LEFT]:
             self.velocity.x = -0.9
+            self.looking_left = True
         elif keys[pygame.K_RIGHT]:
             self.velocity.x = 0.9
+            self.looking_left = False
 
         # Apply gravity
         self.velocity.y += self.gravity
@@ -40,7 +42,10 @@ class Player(Sprite):
         if keys[pygame.K_SPACE] and self.touching_ground == True:
             self.jump()
             self.touching_ground = False
-            
+        #self.draw()
+    
+    def animate(self):
+        pass
 
     def move_with_collision(self, platforms):
         self.rect.x += self.velocity.x
@@ -67,8 +72,9 @@ class Player(Sprite):
     def jump(self):
         self.velocity.y = self.jump_strength
 
-    def draw(self, screen):
-        if self.looking_left == True:
+    def draws(self,screen):
+        print(self.looking_left)
+        if self.looking_left:
             screen.blit(pygame.transform.flip(self.image, True, False), self.rect)
         else:
             screen.blit(self.image, self.rect)
