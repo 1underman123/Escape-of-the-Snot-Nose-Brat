@@ -73,7 +73,6 @@ class Player(Sprite):
         self.velocity.y = self.jump_strength
 
     def draws(self,screen):
-        print(self.looking_left)
         if self.looking_left:
             screen.blit(pygame.transform.flip(self.image, True, False), self.rect)
         else:
