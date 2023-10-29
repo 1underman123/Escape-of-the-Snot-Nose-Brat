@@ -88,22 +88,19 @@ class Player(Sprite):
             screen.blit(pygame.transform.flip(self.image, True, False), self.rect)
         else:
             screen.blit(self.image, self.rect)
-        
-class Object(Sprite):
-    def __init__(self):
-        super().__init__()
 
 
 
 class Platform(Sprite):
-    def __init__(self, x, y, width, height):
+    def __init__(self, image, x, y):
         super().__init__()
-
-        self.image = pygame.Surface((width, height))
-        self.image.fill((52, 44, 31))
+        self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+    # render thyself
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
+class Switch(Sprite):
+    pass

@@ -14,7 +14,7 @@ gameRun = True
 brat = Player(10,10)
 brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
-platforms = [Platform(-1000, 50, 2000, 8), Platform(10,30,10, 2)]
+platforms = [Platform(pygame.image.load('graphics/platforms/floor.png'), 0, 52)]
 platforms_group = pygame.sprite.Group()
 platforms_group.add(platforms)
 background = pygame.image.load('graphics/background.png').convert_alpha()
