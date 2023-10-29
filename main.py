@@ -14,10 +14,11 @@ gameRun = True
 brat = Player(10,10)
 brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
-platform1 = Platform(-1000, 55, 2000, 20)
+platforms = [Platform(-1000, 50, 2000, 8), Platform(10,30,10, 2)]
 platforms_group = pygame.sprite.Group()
-platforms_group.add(platform1)
-
+platforms_group.add(platforms)
+background = pygame.image.load('graphics/background.png').convert_alpha()
+background_rect = background.get_rect(topleft = (0,2))
 
 while gameRun:
     # event loop
@@ -29,7 +30,8 @@ while gameRun:
     brat.update(pygame.key.get_pressed(), platforms_group)
     
     # draw things idk
-    screen.fill('White')
+    screen.fill('Black')
+    screen.blit(background,background_rect)
     platforms_group.draw(screen)
     brat.draws(screen)
 
