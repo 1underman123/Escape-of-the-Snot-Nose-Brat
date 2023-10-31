@@ -19,7 +19,7 @@ class Player(Sprite):
         self.image_timer = 0
         self.image_delay = 100
 
-    def update(self, keys, platforms, levers, door_group, doors):
+    def update(self, keys, platforms, levers, door_group):
         self.velocity.x = 0  # Reset horizontal velocity
 
         # Adjust horizontal velocity based on key presses
@@ -32,7 +32,7 @@ class Player(Sprite):
         elif keys[pygame.K_e]:
             collisions = pygame.sprite.spritecollide(self, levers, False)
             for lever in collisions:
-                lever.toggle(doors)
+                lever.toggle(door_group)
 
         # Apply gravity
         self.velocity.y += self.gravity
@@ -79,13 +79,13 @@ class Player(Sprite):
         collisions.add(doors)
         collisions = pygame.sprite.spritecollide(self, platforms, False)
         if collisions != []:
-            for platform in collisions:
+            for collision in collisions:
                 if self.velocity.y >= 0:
-                    self.rect.bottom = platform.rect.top
+                    self.rect.bottom = collision.rect.top
                     self.velocity.y = 0
                     self.touching_ground = True
                 elif self.velocity.y < 0:
-                    self.rect.top = platform.rect.bottom
+                    self.rect.top = collision.rect.bottom
                     self.velocity.y = 0
                     self.touching_ground = False
         else:

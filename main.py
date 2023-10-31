@@ -38,16 +38,16 @@ while gameRun:
             exit()
         
 
-    brat.update(pygame.key.get_pressed(), platforms_group, lever_group, door_group, doors)
+    brat.update(pygame.key.get_pressed(), platforms_group, lever_group, door_group)
 
     # draw things idk
     screen.fill('Black')
     screen.blit(background,background_rect)
     platforms_group.draw(screen)
     brat.draws(screen)
-    for lever in levers:
+    for lever in lever_group:
         lever.draw(screen)
-    for door in doors:
+    for door in door_group:
         door.draw(screen)
     
     # update the screen
