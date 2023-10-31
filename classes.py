@@ -34,9 +34,7 @@ class Player(Sprite):
             for lever in collisions:
                 lever.toggle()
 
-
         # Apply gravity
-        
         self.velocity.y += self.gravity
 
         # Limit maximum falling speed
@@ -45,9 +43,8 @@ class Player(Sprite):
 
         self.move_with_collision(platforms)  # Handle collisions and move
 
-        if keys[pygame.K_SPACE] and self.touching_ground == True:
+        if keys[pygame.K_SPACE]:
             self.jump()
-            self.touching_ground = False
         
         self.animate()
     
@@ -75,17 +72,22 @@ class Player(Sprite):
         self.rect.y += self.velocity.y
 
         collisions = pygame.sprite.spritecollide(self, platforms, False)
-        for platform in collisions:
-            if self.velocity.y >= 0:
-                self.rect.bottom = platform.rect.top
-                self.velocity.y = 0
-                self.touching_ground = True
-            elif self.velocity.y < 0:
-                self.rect.top = platform.rect.bottom
-                self.velocity.y = 0
-
+        if collisions != []:
+            for platform in collisions:
+                if self.velocity.y >= 0:
+                    self.rect.bottom = platform.rect.top
+                    self.velocity.y = 0
+                    self.touching_ground = True
+                elif self.velocity.y < 0:
+                    self.rect.top = platform.rect.bottom
+                    self.velocity.y = 0
+                    self.touching_ground = False
+        else:
+            self.touching_ground = False
     def jump(self):
-        self.velocity.y = self.jump_strength
+        if self.touching_ground == True:
+            self.velocity.y = self.jump_strength
+            self.touching_ground = False
 
     def draws(self,screen):
         if self.looking_left:

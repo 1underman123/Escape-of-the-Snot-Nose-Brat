@@ -36,7 +36,6 @@ while gameRun:
         
 
     brat.update(pygame.key.get_pressed(), platforms_group, lever_group)
-    print(lever_group)
 
     # draw things idk
     screen.fill('Black')
