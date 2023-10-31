@@ -1,5 +1,5 @@
 import pygame
-from classes import Player, Platform
+from classes import Player, Platform, Lever, Door
 from sys import exit
 
 pygame.init()
@@ -14,11 +14,18 @@ gameRun = True
 brat = Player(10,10)
 brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
-platforms = [Platform(pygame.image.load('graphics/platforms/floor.png'), 0, 52)]
+five_platform = pygame.image.load('graphics/platforms/5-platform.png')
+platforms = [Platform(pygame.image.load('graphics/platforms/floor.png'), 0, 52),Platform(five_platform, screen.get_width()/2, (screen.get_height()/2)+3 )]
 platforms_group = pygame.sprite.Group()
 platforms_group.add(platforms)
+# background
 background = pygame.image.load('graphics/background.png').convert_alpha()
 background_rect = background.get_rect(topleft = (0,2))
+# make levers & group them
+levers = [Lever("dark blue", 10, 52), Lever("yellow", 15, 52)]
+lever_group = pygame.sprite.Group()
+lever_group.add(levers)
+
 
 while gameRun:
     # event loop
@@ -26,15 +33,19 @@ while gameRun:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+        
 
-    brat.update(pygame.key.get_pressed(), platforms_group)
-    
+    brat.update(pygame.key.get_pressed(), platforms_group, lever_group)
+    print(lever_group)
+
     # draw things idk
     screen.fill('Black')
     screen.blit(background,background_rect)
     platforms_group.draw(screen)
     brat.draws(screen)
-
+    for lever in levers:
+        lever.draw(screen)
+    
     # update the screen
     pygame.display.update()
     pygame.display.flip()
