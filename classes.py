@@ -18,6 +18,7 @@ class Player(Sprite):
         self.gravity = 0.16  # Adjust gravity as needed
         self.image_timer = 0
         self.image_delay = 100
+        self.jump_sfx = pygame.mixer.Sound('sounds/sfx/jump.wav')
 
     def update(self, keys, platforms, levers, door_group):
         self.velocity.x = 0  # Reset horizontal velocity
@@ -26,10 +27,10 @@ class Player(Sprite):
         if keys[pygame.K_LEFT]:
             self.velocity.x = -0.6
             self.looking_left = True
-        elif keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT]:
             self.velocity.x = 0.6
             self.looking_left = False
-        elif keys[pygame.K_e]:
+        if keys[pygame.K_e]:
             collisions = pygame.sprite.spritecollide(self, levers, False)
             for lever in collisions:
                 lever.toggle(door_group)
@@ -66,11 +67,11 @@ class Player(Sprite):
         collisions.add(platforms)
         collisions.add(doors)
         collisions = pygame.sprite.spritecollide(self, collisions, False)
-        for platform in collisions:
+        for collision in collisions:
             if self.velocity.x > 0:
-                self.rect.right = platform.rect.left
+                self.rect.right = collision.rect.left
             elif self.velocity.x < 0:
-                self.rect.left = platform.rect.right
+                self.rect.left = collision.rect.right
 
         self.rect.y += self.velocity.y
 
@@ -90,8 +91,10 @@ class Player(Sprite):
                     self.touching_ground = False
         else:
             self.touching_ground = False
+    
     def jump(self):
         if self.touching_ground == True:
+            self.jump_sfx.play()
             self.velocity.y = self.jump_strength
             self.touching_ground = False
 
@@ -152,9 +155,11 @@ class Door(Sprite):
         self.rect = self.image.get_rect(midbottom = (x,y))
         self.is_open = False
         self.pos = (x,y)
+        self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
     
     def toggle(self):
         self.is_open = not self.is_open
+        self.sfx.play()
 
     def draw(self, screen):
         if not self.is_open:
@@ -168,8 +173,8 @@ class Door(Sprite):
         if color == "dark blue":
             return pygame.image.load('graphics/doors/dark_blue.png').convert_alpha()
         elif color == "green":
-            return pygame.image.load('graphics/levers/green_door.png').convert_alpha()
+            return pygame.image.load('graphics/doors/green.png').convert_alpha()
         elif color == "hot pink":
-            return pygame.image.load('graphics/levers/hot_pink_off.png').convert_alpha()
+            return pygame.image.load('graphics/doors/hot_pink.png').convert_alpha()
         else:
-            return pygame.image.load('graphics/levers/yellow_off.png').convert_alpha()
+            return pygame.image.load('graphics/doors/yellow.png').convert_alpha()

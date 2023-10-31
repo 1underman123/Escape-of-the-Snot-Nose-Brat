@@ -3,6 +3,7 @@ from classes import Player, Platform, Lever, Door
 from sys import exit
 
 pygame.init()
+pygame.mixer.init()
 flags = pygame.SCALED | pygame.RESIZABLE
 screen = pygame.display.set_mode((80,60),flags)
 pygame.display.set_caption('game')
@@ -22,11 +23,11 @@ platforms_group.add(platforms)
 background = pygame.image.load('graphics/background.png').convert_alpha()
 background_rect = background.get_rect(topleft = (0,2))
 # make levers & group them
-levers = [Lever("dark blue", 10, 52), Lever("yellow", 15, 52)]
+levers = [Lever("dark blue", 10, 52), Lever("yellow", 25, 52)]
 lever_group = pygame.sprite.Group()
 lever_group.add(levers)
 # doors
-doors = [Door("dark blue", 20, 52)]
+doors = [Door("dark blue", 20, 52), Door("yellow", 30, 52)]
 door_group = pygame.sprite.Group()
 door_group.add(doors)
 
