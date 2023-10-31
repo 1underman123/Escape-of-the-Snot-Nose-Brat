@@ -3,6 +3,7 @@ from classes import Player, Platform, Lever, Door
 from sys import exit
 
 pygame.init()
+pygame.mixer.init()
 flags = pygame.SCALED | pygame.RESIZABLE
 screen = pygame.display.set_mode((80,60),flags)
 pygame.display.set_caption('game')
@@ -22,10 +23,13 @@ platforms_group.add(platforms)
 background = pygame.image.load('graphics/background.png').convert_alpha()
 background_rect = background.get_rect(topleft = (0,2))
 # make levers & group them
-levers = [Lever("dark blue", 10, 52), Lever("yellow", 15, 52)]
+levers = [Lever("dark blue", 10, 52), Lever("yellow", 25, 52)]
 lever_group = pygame.sprite.Group()
 lever_group.add(levers)
-
+# doors
+doors = [Door("dark blue", 20, 52), Door("yellow", 30, 52)]
+door_group = pygame.sprite.Group()
+door_group.add(doors)
 
 while gameRun:
     # event loop
@@ -35,15 +39,17 @@ while gameRun:
             exit()
         
 
-    brat.update(pygame.key.get_pressed(), platforms_group, lever_group)
+    brat.update(pygame.key.get_pressed(), platforms_group, lever_group, door_group)
 
     # draw things idk
     screen.fill('Black')
     screen.blit(background,background_rect)
     platforms_group.draw(screen)
     brat.draws(screen)
-    for lever in levers:
+    for lever in lever_group:
         lever.draw(screen)
+    for door in door_group:
+        door.draw(screen)
     
     # update the screen
     pygame.display.update()

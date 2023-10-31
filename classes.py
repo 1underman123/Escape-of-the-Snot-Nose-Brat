@@ -18,21 +18,22 @@ class Player(Sprite):
         self.gravity = 0.16  # Adjust gravity as needed
         self.image_timer = 0
         self.image_delay = 100
+        self.jump_sfx = pygame.mixer.Sound('sounds/sfx/jump.wav')
 
-    def update(self, keys, platforms, levers):
+    def update(self, keys, platforms, levers, door_group):
         self.velocity.x = 0  # Reset horizontal velocity
 
         # Adjust horizontal velocity based on key presses
         if keys[pygame.K_LEFT]:
             self.velocity.x = -0.6
             self.looking_left = True
-        elif keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT]:
             self.velocity.x = 0.6
             self.looking_left = False
-        elif keys[pygame.K_e]:
+        if keys[pygame.K_e]:
             collisions = pygame.sprite.spritecollide(self, levers, False)
             for lever in collisions:
-                lever.toggle()
+                lever.toggle(door_group)
 
         # Apply gravity
         self.velocity.y += self.gravity
@@ -41,7 +42,7 @@ class Player(Sprite):
         if self.velocity.y > 10:
             self.velocity.y = 10
 
-        self.move_with_collision(platforms)  # Handle collisions and move
+        self.move_with_collision(platforms, door_group)  # Handle collisions and move
 
         if keys[pygame.K_SPACE]:
             self.jump()
@@ -60,32 +61,40 @@ class Player(Sprite):
                 self.addplayer_index = 0
                 self.image = self.brat_idle
 
-    def move_with_collision(self, platforms):
+    def move_with_collision(self, platforms, doors):
         self.rect.x += self.velocity.x
-        collisions = pygame.sprite.spritecollide(self, platforms, False)
-        for platform in collisions:
+        collisions = pygame.sprite.Group()
+        collisions.add(platforms)
+        collisions.add(doors)
+        collisions = pygame.sprite.spritecollide(self, collisions, False)
+        for collision in collisions:
             if self.velocity.x > 0:
-                self.rect.right = platform.rect.left
+                self.rect.right = collision.rect.left
             elif self.velocity.x < 0:
-                self.rect.left = platform.rect.right
+                self.rect.left = collision.rect.right
 
         self.rect.y += self.velocity.y
 
+        collisions = pygame.sprite.Group()
+        collisions.add(platforms)
+        collisions.add(doors)
         collisions = pygame.sprite.spritecollide(self, platforms, False)
         if collisions != []:
-            for platform in collisions:
+            for collision in collisions:
                 if self.velocity.y >= 0:
-                    self.rect.bottom = platform.rect.top
+                    self.rect.bottom = collision.rect.top
                     self.velocity.y = 0
                     self.touching_ground = True
                 elif self.velocity.y < 0:
-                    self.rect.top = platform.rect.bottom
+                    self.rect.top = collision.rect.bottom
                     self.velocity.y = 0
                     self.touching_ground = False
         else:
             self.touching_ground = False
+    
     def jump(self):
         if self.touching_ground == True:
+            self.jump_sfx.play()
             self.velocity.y = self.jump_strength
             self.touching_ground = False
 
@@ -112,16 +121,22 @@ class Lever(Sprite):
         self.is_on = False
         self.image_timer = 0
         self.image_delay = 500
-    def toggle(self):
+
+    def toggle(self, doors):
         current_time = pygame.time.get_ticks()
         if current_time - self.image_timer > self.image_delay:
             self.image_timer = current_time
             self.is_on = not self.is_on
+            for door in doors:
+                if door.color == self.color:
+                    door.toggle()
+
     def draw(self, screen):
         if self.is_on:
             screen.blit(self.image[1], self.rect)
         else:
             screen.blit(self.image[0], self.rect)
+
     def color(self, color):
         if color == "dark blue":
             return [pygame.image.load('graphics/levers/dark_blue_off.png').convert_alpha(), pygame.image.load('graphics/levers/dark_blue_on.png').convert_alpha()]
@@ -133,12 +148,33 @@ class Lever(Sprite):
             return [pygame.image.load('graphics/levers/yellow_off.png').convert_alpha(), pygame.image.load('graphics/levers/yellow_on.png').convert_alpha()]
 
 class Door(Sprite):
-    def __init__(self, image, x, y):
+    def __init__(self, color, x, y):
         super().__init__()
-        self.image = image
+        self.color = color
+        self.image = self.colors(self.color)
         self.rect = self.image.get_rect(midbottom = (x,y))
         self.is_open = False
+        self.pos = (x,y)
+        self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
+    
     def toggle(self):
         self.is_open = not self.is_open
+        self.sfx.play()
+
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        if not self.is_open:
+            self.rect = self.image.get_rect(midbottom = self.pos)
+            screen.blit(self.image, self.rect)
+        else:
+            self.rect.width = 0
+            self.rect.height = 0
+            
+    def colors(self, color):
+        if color == "dark blue":
+            return pygame.image.load('graphics/doors/dark_blue.png').convert_alpha()
+        elif color == "green":
+            return pygame.image.load('graphics/doors/green.png').convert_alpha()
+        elif color == "hot pink":
+            return pygame.image.load('graphics/doors/hot_pink.png').convert_alpha()
+        else:
+            return pygame.image.load('graphics/doors/yellow.png').convert_alpha()
