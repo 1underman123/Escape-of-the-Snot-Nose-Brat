@@ -118,6 +118,7 @@ class Lever(Sprite):
         self.is_on = False
         self.image_timer = 0
         self.image_delay = 500
+
     def toggle(self, doors):
         current_time = pygame.time.get_ticks()
         if current_time - self.image_timer > self.image_delay:
@@ -126,11 +127,13 @@ class Lever(Sprite):
             for door in doors:
                 if door.color == self.color:
                     door.toggle()
+
     def draw(self, screen):
         if self.is_on:
             screen.blit(self.image[1], self.rect)
         else:
             screen.blit(self.image[0], self.rect)
+
     def color(self, color):
         if color == "dark blue":
             return [pygame.image.load('graphics/levers/dark_blue_off.png').convert_alpha(), pygame.image.load('graphics/levers/dark_blue_on.png').convert_alpha()]
@@ -148,13 +151,19 @@ class Door(Sprite):
         self.image = self.colors(self.color)
         self.rect = self.image.get_rect(midbottom = (x,y))
         self.is_open = False
+        self.pos = (x,y)
+    
     def toggle(self):
         self.is_open = not self.is_open
+
     def draw(self, screen):
-        if self.is_open:
-            pass
-        else:
+        if not self.is_open:
+            self.rect = self.image.get_rect(midbottom = self.pos)
             screen.blit(self.image, self.rect)
+        else:
+            self.rect.width = 0
+            self.rect.height = 0
+            
     def colors(self, color):
         if color == "dark blue":
             return pygame.image.load('graphics/doors/dark_blue.png').convert_alpha()
