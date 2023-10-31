@@ -25,7 +25,10 @@ background_rect = background.get_rect(topleft = (0,2))
 levers = [Lever("dark blue", 10, 52), Lever("yellow", 15, 52)]
 lever_group = pygame.sprite.Group()
 lever_group.add(levers)
-
+# doors
+doors = [Door("dark blue", 20, 52)]
+door_group = pygame.sprite.Group()
+door_group.add(doors)
 
 while gameRun:
     # event loop
@@ -35,7 +38,7 @@ while gameRun:
             exit()
         
 
-    brat.update(pygame.key.get_pressed(), platforms_group, lever_group)
+    brat.update(pygame.key.get_pressed(), platforms_group, lever_group, door_group, doors)
 
     # draw things idk
     screen.fill('Black')
@@ -44,6 +47,8 @@ while gameRun:
     brat.draws(screen)
     for lever in levers:
         lever.draw(screen)
+    for door in doors:
+        door.draw(screen)
     
     # update the screen
     pygame.display.update()
