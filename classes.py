@@ -1,6 +1,7 @@
 import pygame
 from pygame.sprite import Sprite
 
+
 class Player(Sprite):
     def __init__(self, x, y):
         super().__init__()
@@ -17,7 +18,7 @@ class Player(Sprite):
         self.jump_strength = -2.6  # Adjust jump strength as needed
         self.gravity = 0.16  # Adjust gravity as needed
         self.image_timer = 0
-        self.image_delay = 100
+        self.image_delay = 60
         self.jump_sfx = pygame.mixer.Sound('sounds/sfx/jump.wav')
 
     def update(self, keys, platforms, levers, door_group):
@@ -96,7 +97,7 @@ class Player(Sprite):
         if self.touching_ground == True:
             self.jump_sfx.play()
             self.velocity.y = self.jump_strength
-            self.touching_ground = False
+            
 
     def draws(self,screen):
         if self.looking_left:
