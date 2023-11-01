@@ -10,7 +10,7 @@ pygame.display.set_caption("Snots and Spooks: Escape-of-the-Snot-Nose-Brat")
 clock = pygame.time.Clock()
 test_font = pygame.font.Font(None, 50)
 gameRun = True
-windowed_mode = False
+windowed_mode = True
 
 # on screen timer
 #font
@@ -23,7 +23,8 @@ brat = Player(10,10)
 brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
 five_platform = pygame.image.load('graphics/platforms/5-platform.png')
-platforms = [Platform(pygame.image.load('graphics/platforms/floor.png'), 0, 52),Platform(five_platform, screen.get_width()/2, (screen.get_height()/2)+3 )]
+floor = pygame.image.load('graphics/platforms/floor.png')
+platforms = [Platform(floor, 0, 52),Platform(five_platform, screen.get_width()/2, (screen.get_height()/2)+3 )]
 platforms_group = pygame.sprite.Group()
 platforms_group.add(platforms)
 # background
@@ -80,7 +81,7 @@ while gameRun:
             level_one = False
             game_over = True
 
-        timer_text = font.render("Time:{:d}".format(timer), True, (255, 0, 0))
+        timer_text = font.render("{:d}".format(timer), True, (255, 0, 0))
         screen.blit(timer_text,(0,0))
 
         # update the screen
