@@ -149,7 +149,7 @@ class Lever(Sprite):
             return [pygame.image.load('graphics/levers/yellow_off.png').convert_alpha(), pygame.image.load('graphics/levers/yellow_on.png').convert_alpha()]
 
 class Door(Sprite):
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, is_rotated):
         super().__init__()
         self.color = color
         self.image = self.colors(self.color)
@@ -157,6 +157,7 @@ class Door(Sprite):
         self.is_open = False
         self.pos = (x,y)
         self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
+        self.is_rotated = is_rotated
     
     def toggle(self):
         self.is_open = not self.is_open

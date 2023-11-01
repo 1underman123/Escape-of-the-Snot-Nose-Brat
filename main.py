@@ -34,8 +34,9 @@ background_rect = background.get_rect(topleft = (0,2))
 levers = [Lever("dark blue", 10, 52), Lever("yellow", 25, 52)]
 lever_group = pygame.sprite.Group()
 lever_group.add(levers)
+
 # doors
-doors = [Door("dark blue", 20, 52), Door("yellow", 30, 52)]
+doors = [Door("dark blue", 20, 52, False), Door("yellow", 30, 52, True)]
 door_group = pygame.sprite.Group()
 door_group.add(doors)
 
