@@ -37,11 +37,11 @@ level_one_platforms = [Platform(floor, 0, 52),Platform(five_platform, screen.get
 level_one_platforms_group = pygame.sprite.Group()
 level_one_platforms_group.add(level_one_platforms)
 #levers
-level_one_levers = [Lever("dark blue", 10, 52), Lever("yellow", 25, 52)]
+level_one_levers = [Lever("dark blue", (screen.get_width()/2) + 2, (screen.get_height()/2)+3)]
 level_one_levers_group = pygame.sprite.Group()
 level_one_levers_group.add(level_one_levers)
 #doors
-level_one_doors = [Door("dark blue", 20, 52, False), Door("yellow", 30, 52, True)]
+level_one_doors = [Door("dark blue", 79, 52, False)]
 level_one_doors_group = pygame.sprite.Group()
 level_one_doors_group.add(level_one_doors)
 #make dict
@@ -49,6 +49,7 @@ level_one_dict = {"Platform Group": level_one_platforms_group,
              "Lever Group": level_one_levers_group,
              "Doors Group": level_one_doors_group
             }
+
 # level two #
 
 # level three #
@@ -65,7 +66,7 @@ title_screen = False
 level_one = True
 game_over = False
 #timer
-elapsed_time =0
+elapsed_time = 0
 level_one_timer = 30
 while gameRun:
     # event loop
@@ -83,6 +84,7 @@ while gameRun:
 
     if level_one:
         # update player(the brat)
+        print(elapsed_time)
         brat.update(pygame.key.get_pressed(), level_one_platforms_group, level_one_levers_group, level_one_doors_group)
         screen.fill('Black')
         game_states.level(level_one_dict, screen, background, background_rect,level_one_timer,elapsed_time)
