@@ -19,7 +19,7 @@ timer = 30
 elapsed_time = 0
 
 # create player & put it in GroupSingle
-brat = Player(10,10)
+brat = Player(10,53)
 brat.add(pygame.sprite.GroupSingle())
 # make platforms & put in a group
 five_platform = pygame.image.load('graphics/platforms/5-platform.png')

@@ -8,9 +8,7 @@ class Player(Sprite):
         self.brat_idle = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
         self.brat_walk = [pygame.image.load('graphics/brat/brat_walk1.png').convert_alpha(),pygame.image.load('graphics/brat/brat_walk2.png').convert_alpha()]
         self.image = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect = self.image.get_rect(midbottom = (x, y))
         self.touching_ground = False
         self.looking_left = False
         self.velocity = pygame.Vector2(0, 0)  # Create a Vector2 object
@@ -51,6 +49,7 @@ class Player(Sprite):
         self.animate()
     
     def animate(self):
+        print(self.touching_ground)
         current_time = pygame.time.get_ticks()
         if current_time - self.image_timer > self.image_delay:
             self.image_timer = current_time
@@ -73,7 +72,9 @@ class Player(Sprite):
                 self.rect.right = collision.rect.left
             elif self.velocity.x < 0:
                 self.rect.left = collision.rect.right
-
+        
+        
+        #self.velocity.y = 0
         self.rect.y += self.velocity.y
 
         collisions = pygame.sprite.Group()
@@ -82,7 +83,7 @@ class Player(Sprite):
         collisions = pygame.sprite.spritecollide(self, platforms, False)
         if collisions != []:
             for collision in collisions:
-                if self.velocity.y >= 0:
+                if self.velocity.y > 0:
                     self.rect.bottom = collision.rect.top
                     self.velocity.y = 0
                     self.touching_ground = True
@@ -90,13 +91,12 @@ class Player(Sprite):
                     self.rect.top = collision.rect.bottom
                     self.velocity.y = 0
                     self.touching_ground = False
-        else:
-            self.touching_ground = False
     
     def jump(self):
         if self.touching_ground == True:
             self.jump_sfx.play()
             self.velocity.y = self.jump_strength
+            self.touching_ground = False
             
 
     def draws(self,screen):
