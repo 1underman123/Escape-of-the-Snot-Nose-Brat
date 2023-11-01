@@ -1,15 +1,14 @@
 import pygame
 from pygame.sprite import Sprite
 
+
 class Player(Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.brat_idle = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
         self.brat_walk = [pygame.image.load('graphics/brat/brat_walk1.png').convert_alpha(),pygame.image.load('graphics/brat/brat_walk2.png').convert_alpha()]
         self.image = pygame.image.load('graphics/brat/brat_idle.png').convert_alpha()
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
+        self.rect = self.image.get_rect(midbottom = (x, y))
         self.touching_ground = False
         self.looking_left = False
         self.velocity = pygame.Vector2(0, 0)  # Create a Vector2 object
@@ -17,7 +16,7 @@ class Player(Sprite):
         self.jump_strength = -2.6  # Adjust jump strength as needed
         self.gravity = 0.16  # Adjust gravity as needed
         self.image_timer = 0
-        self.image_delay = 100
+        self.image_delay = 60
         self.jump_sfx = pygame.mixer.Sound('sounds/sfx/jump.wav')
 
     def update(self, keys, platforms, levers, door_group):
@@ -72,16 +71,21 @@ class Player(Sprite):
                 self.rect.right = collision.rect.left
             elif self.velocity.x < 0:
                 self.rect.left = collision.rect.right
-
+            else:
+                self.rect
+        
+        #self.velocity.y = 0
         self.rect.y += self.velocity.y
 
+        if self.velocity.y > 0:
+            self.touching_ground = False
         collisions = pygame.sprite.Group()
         collisions.add(platforms)
         collisions.add(doors)
         collisions = pygame.sprite.spritecollide(self, platforms, False)
         if collisions != []:
             for collision in collisions:
-                if self.velocity.y >= 0:
+                if self.velocity.y > 0:
                     self.rect.bottom = collision.rect.top
                     self.velocity.y = 0
                     self.touching_ground = True
@@ -89,14 +93,24 @@ class Player(Sprite):
                     self.rect.top = collision.rect.bottom
                     self.velocity.y = 0
                     self.touching_ground = False
-        else:
-            self.touching_ground = False
-    
+
+        door_collisions = pygame.sprite.spritecollide(self, doors, False)
+        if door_collisions != []:
+            # Determine the direction of the door the player is closest to
+            closest_door = min(door_collisions, key=lambda door: abs(self.rect.centerx - door.rect.centerx))
+            if self.rect.centerx < closest_door.rect.centerx:
+                # Player is closer to the left side of the door
+                self.rect.right = closest_door.rect.left
+            else:
+                # Player is closer to the right side of the door
+                self.rect.left = closest_door.rect.right
+
     def jump(self):
         if self.touching_ground == True:
             self.jump_sfx.play()
             self.velocity.y = self.jump_strength
             self.touching_ground = False
+            
 
     def draws(self,screen):
         if self.looking_left:
@@ -148,7 +162,7 @@ class Lever(Sprite):
             return [pygame.image.load('graphics/levers/yellow_off.png').convert_alpha(), pygame.image.load('graphics/levers/yellow_on.png').convert_alpha()]
 
 class Door(Sprite):
-    def __init__(self, color, x, y):
+    def __init__(self, color, x, y, is_rotated):
         super().__init__()
         self.color = color
         self.image = self.colors(self.color)
@@ -156,6 +170,7 @@ class Door(Sprite):
         self.is_open = False
         self.pos = (x,y)
         self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
+        self.is_rotated = is_rotated
     
     def toggle(self):
         self.is_open = not self.is_open
