@@ -1,7 +1,8 @@
 import pygame
-from classes import Player, Platform, Lever, Door
+from classes import Player, Platform, Lever, Door, Goal
 import game_states
 from sys import exit
+import time
 
 pygame.init()
 pygame.mixer.init()
@@ -9,7 +10,6 @@ flags = pygame.SCALED | pygame.RESIZABLE
 screen = pygame.display.set_mode((80,60),flags)
 pygame.display.set_caption("Snots and Spooks: Escape-of-the-Snot-Nose-Brat")
 clock = pygame.time.Clock()
-test_font = pygame.font.Font(None, 50)
 gameRun = True
 windowed_mode = True
 
@@ -31,6 +31,8 @@ five_platform = pygame.image.load('graphics/platforms/5-platform.png').convert_a
 floor = pygame.image.load('graphics/platforms/floor.png').convert_alpha()
 wall = pygame.image.load('graphics/platforms/wall.png').convert_alpha()
 
+# make goal post
+goal = Goal(79, 50)
 # level one #
 #platforms
 level_one_platforms = [Platform(floor, 0, 52),Platform(five_platform, screen.get_width()/2, (screen.get_height()/2)+3), Platform(wall, -1, 0), Platform(wall, 80, 0)]
@@ -44,30 +46,35 @@ level_one_levers_group.add(level_one_levers)
 level_one_doors = [Door("dark blue", 79, 52, False)]
 level_one_doors_group = pygame.sprite.Group()
 level_one_doors_group.add(level_one_doors)
-#make dict
+#make dict and list
 level_one_dict = {"Platform Group": level_one_platforms_group,
              "Lever Group": level_one_levers_group,
-             "Doors Group": level_one_doors_group
-            }
-
+             "Doors Group": level_one_doors_group}
+level_one_list = [level_one_platforms, level_one_levers, level_one_doors]
 # level two #
 
 # level three #
 
 # level four #
 
-# title screen #
-
-# game over #
-
-
+# list of all levels #
+levels_list = [level_one_list]
 # Game States
-title_screen = False
-level_one = True
+title_screen = True
+level_one = False
+level_two = False
+level_three = False
+level_four = False
 game_over = False
 #timer
+total_time = 0
 elapsed_time = 0
 level_one_timer = 30
+level_two_timer = 20
+level_three_timer = 6
+level_four_timer = 10
+
+# game loop
 while gameRun:
     # event loop
     for event in pygame.event.get():
@@ -81,13 +88,23 @@ while gameRun:
                     screen = pygame.display.set_mode((80, 60), pygame.SCALED | pygame.RESIZABLE)
                 else:
                     screen = pygame.display.set_mode((80, 60), pygame.SCALED | pygame.RESIZABLE | pygame.FULLSCREEN)
-
+            if event.key == pygame.K_RETURN and (game_over == True or title_screen == True):
+                game_over = False
+                title_screen = False
+                level_one = True
+                game_states.reset(screen, levels_list, floor, five_platform, wall)
+                game_states.fading(screen,(52,28,34), 150)
+                brat = Player(10,53)
+                brat.add(pygame.sprite.GroupSingle())
+    # game states
     if level_one:
         # update player(the brat)
-        print(elapsed_time)
         brat.update(pygame.key.get_pressed(), level_one_platforms_group, level_one_levers_group, level_one_doors_group)
         screen.fill('Black')
-        game_states.level(level_one_dict, screen, background, background_rect,level_one_timer,elapsed_time)
+        # draw the level
+        game_states.level(levels_list[0], goal, screen, background, background_rect,level_one_timer,elapsed_time)
+        # timer stuff
+        total_time += 1
         elapsed_time += 1
         if elapsed_time >= 60:
             level_one_timer -= 1  # Increment by 1 second
@@ -95,15 +112,29 @@ while gameRun:
         if timer <= 0:
             level_one = False
             game_over = True
-        timer_text = font.render("{:d}".format(timer), True, (255, 0, 0))
+        timer_text = font.render("{:d}".format(level_one_timer), False, (255, 0, 0))
         screen.blit(timer_text,(0,0))
-
+        # check for failure
+        if level_one_timer == 0:
+            level_one = False
+            game_over = True
+            level_one_timer = 30
+            brat.kill()
+        # check for success
+        if goal.collision(brat):
+            level_one = False
+            game_over = True
+            level_one_timer = 30
+            brat.kill()
+        # draw brat to screen
         brat.draws(screen)
         
     elif game_over:
-        break
-    else:
-        break
+        game_states.game_over(screen, font, total_time)
+    
+    elif title_screen:
+        game_states.title_screen(screen, font)
+
     pygame.display.flip()
     # cap at 60 fps
     clock.tick(60)

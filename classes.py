@@ -21,7 +21,7 @@ class Player(Sprite):
 
     def update(self, keys, platforms, levers, door_group):
         self.velocity.x = 0  # Reset horizontal velocity
-
+        self.animate()
         # Adjust horizontal velocity based on key presses
         if keys[pygame.K_LEFT]:
             self.velocity.x = -0.6
@@ -46,7 +46,7 @@ class Player(Sprite):
         if keys[pygame.K_SPACE]:
             self.jump()
         
-        self.animate()
+        
     
     def animate(self):
         current_time = pygame.time.get_ticks()
@@ -162,12 +162,12 @@ class Lever(Sprite):
             return [pygame.image.load('graphics/levers/yellow_off.png').convert_alpha(), pygame.image.load('graphics/levers/yellow_on.png').convert_alpha()]
 
 class Door(Sprite):
-    def __init__(self, color, x, y, is_rotated):
+    def __init__(self, color, x, y, is_rotated=False, is_open=False):
         super().__init__()
         self.color = color
         self.image = self.colors(self.color)
         self.rect = self.image.get_rect(midbottom = (x,y))
-        self.is_open = False
+        self.is_open = is_open
         self.pos = (x,y)
         self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
         self.is_rotated = is_rotated
@@ -193,3 +193,14 @@ class Door(Sprite):
             return pygame.image.load('graphics/doors/hot_pink.png').convert_alpha()
         else:
             return pygame.image.load('graphics/doors/yellow.png').convert_alpha()
+
+class Goal(Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.image.load("graphics/goal.png")
+        self.rect = self.image.get_rect(midbottom = (x,y))
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+    def collision(self, player):
+        if player.rect.colliderect(self.rect):
+            return True
