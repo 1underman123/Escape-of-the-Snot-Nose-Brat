@@ -15,16 +15,6 @@ def level(level_dict, goal, screen, background, background_rect, timer, elapsed_
                 door.draw(screen)
     goal.draw(screen)
 
-# overwrite the level_list values with the copy
-def reset(screen, levels_list, floor, five_platform, wall):
-    for level in levels_list[0]:
-        print(level)
-        level[0] = [Platform(floor, 0, 52),Platform(five_platform, screen.get_width()/2, (screen.get_height()/2)+3), Platform(wall, -1, 0), Platform(wall, 80, 0)]
-        level[1] = [Lever("dark blue", (screen.get_width()/2) + 2, (screen.get_height()/2)+3)]
-        level[2] = [Door("dark blue", 79, 52, False)]
-
-
-
 def title_screen(screen, font):
     screen.fill('Black')
     screen.blit(font.render("Snots and", False, (255, 255, 255)), (10,0))
