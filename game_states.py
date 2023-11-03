@@ -4,6 +4,7 @@ from classes import Player, Platform, Lever, Door
 
 def level(level_dict, goal, screen, background, background_rect, timer, elapsed_time):
     screen.blit(background,background_rect)
+    goal.draw(screen)
     for groups, group in level_dict.items():
         if groups == "Platform Group":
             group.draw(screen)
@@ -13,7 +14,6 @@ def level(level_dict, goal, screen, background, background_rect, timer, elapsed_
         else:
             for door in group:
                 door.draw(screen)
-    goal.draw(screen)
 
 def title_screen(screen, font):
     screen.fill('Black')
@@ -30,7 +30,14 @@ def game_over(screen, font, total_time):
     screen.blit(font.render("been caught", False, (255, 0, 0)), (0,10))
     screen.blit(font.render("...", False, (255, 0, 0)), (0,20))
     screen.blit(font.render("Press Enter", False, (255, 255, 255)), (0,30))
-    screen.blit(font.render("time:{}".format(total_time/60), False, (255,255,255)), (0,40))
+    screen.blit(font.render("time:{:.2f}".format(total_time/60), False, (255,255,255)), (0,40))
+
+def win(screen, font, total_time):
+    screen.fill('Black')
+    screen.blit(font.render("You Escaped!", False, (255, 238, 131)), (5,0))
+    screen.blit(font.render("Press Enter", False, (255, 0, 0)), (6,15))
+    screen.blit(font.render("to try again", False, (255, 0, 0)), (4,25))
+    screen.blit(font.render("time:{:.2f}".format(total_time/60), False, (255,255,255)), (10,40))
 
 def fading(screen, fade_color, duration):
     fade_surface = pygame.Surface((screen.get_width(), screen.get_height()))

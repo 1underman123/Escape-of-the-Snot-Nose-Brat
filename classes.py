@@ -21,7 +21,7 @@ class Player(Sprite):
 
     def update(self, keys, platforms, levers, door_group):
         self.velocity.x = 0  # Reset horizontal velocity
-        self.animate()
+        
         # Adjust horizontal velocity based on key presses
         if keys[pygame.K_LEFT]:
             self.velocity.x = -0.6
@@ -42,11 +42,10 @@ class Player(Sprite):
             self.velocity.y = 10
 
         self.move_with_collision(platforms, door_group)  # Handle collisions and move
+        self.animate()
 
         if keys[pygame.K_SPACE]:
             self.jump()
-        
-        
     
     def animate(self):
         current_time = pygame.time.get_ticks()
@@ -57,7 +56,7 @@ class Player(Sprite):
                 self.image = self.brat_walk[self.player_index]
                 self.player_index += 1
             else:
-                self.addplayer_index = 0
+                self.player_index = 0
                 self.image = self.brat_idle
 
     def move_with_collision(self, platforms, doors):
@@ -77,8 +76,6 @@ class Player(Sprite):
         #self.velocity.y = 0
         self.rect.y += self.velocity.y
 
-        if self.velocity.y > 0:
-            self.touching_ground = False
         collisions = pygame.sprite.Group()
         collisions.add(platforms)
         collisions.add(doors)
@@ -96,14 +93,14 @@ class Player(Sprite):
 
         door_collisions = pygame.sprite.spritecollide(self, doors, False)
         if door_collisions != []:
-            # Determine the direction of the door the player is closest to
-            closest_door = min(door_collisions, key=lambda door: abs(self.rect.centerx - door.rect.centerx))
-            if self.rect.centerx < closest_door.rect.centerx:
-                # Player is closer to the left side of the door
-                self.rect.right = closest_door.rect.left
-            else:
-                # Player is closer to the right side of the door
-                self.rect.left = closest_door.rect.right
+            for door in door_collisions:
+                if self.velocity.y >= 0:
+                    self.rect.bottom = door.rect.top
+                    self.velocity.y = 0
+                    self.touching_ground = True
+                else:
+                    self.rect.top = door.rect.bottom
+                    self.velocity.y = 0
 
     def jump(self):
         if self.touching_ground == True:
@@ -162,15 +159,16 @@ class Lever(Sprite):
             return [pygame.image.load('graphics/levers/yellow_off.png').convert_alpha(), pygame.image.load('graphics/levers/yellow_on.png').convert_alpha()]
 
 class Door(Sprite):
-    def __init__(self, color, x, y, is_rotated=False, is_open=False):
+    def __init__(self, color, x, y, is_open=False, is_rotated=False):
         super().__init__()
+        self.is_rotated = is_rotated
+        self.initialy_open = is_open
         self.color = color
         self.image = self.colors(self.color)
         self.rect = self.image.get_rect(midbottom = (x,y))
         self.is_open = is_open
         self.pos = (x,y)
         self.sfx = pygame.mixer.Sound('sounds/sfx/door.wav')
-        self.is_rotated = is_rotated
     
     def toggle(self):
         self.is_open = not self.is_open
@@ -185,14 +183,19 @@ class Door(Sprite):
             self.rect.height = 0
             
     def colors(self, color):
-        if color == "dark blue":
-            return pygame.image.load('graphics/doors/dark_blue.png').convert_alpha()
-        elif color == "green":
-            return pygame.image.load('graphics/doors/green.png').convert_alpha()
-        elif color == "hot pink":
-            return pygame.image.load('graphics/doors/hot_pink.png').convert_alpha()
+        if self.is_rotated == False:
+            if color == "dark blue":
+                return pygame.image.load('graphics/doors/dark_blue.png').convert_alpha()
+            elif color == "green":
+                return pygame.image.load('graphics/doors/green.png').convert_alpha()
+            elif color == "hot pink":
+                return pygame.image.load('graphics/doors/hot_pink.png').convert_alpha()
+            elif color == "yellow":
+                return pygame.image.load('graphics/doors/yellow.png').convert_alpha()
+            elif color == "dark blue rotated":
+                return pygame.image.load('graphics/doors/dark_blue_rotated.png')
         else:
-            return pygame.image.load('graphics/doors/yellow.png').convert_alpha()
+            return pygame.image.load('graphics/doors/dark_blue_rotated.png')
 
 class Goal(Sprite):
     def __init__(self, x, y):
