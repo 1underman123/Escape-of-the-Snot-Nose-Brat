@@ -103,7 +103,6 @@ class Player(Sprite):
                 else:
                     self.rect.top = door.rect.bottom
                     self.velocity.y = 0
-        print("velocity:",self.velocity.y,"\nground:",self.touching_ground)
 
     def jump(self):
         if self.touching_ground == True:
