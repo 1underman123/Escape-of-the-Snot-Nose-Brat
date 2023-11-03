@@ -76,20 +76,22 @@ class Player(Sprite):
         #self.velocity.y = 0
         self.rect.y += self.velocity.y
 
+        if self.velocity.y > 0.48:
+            self.touching_ground = False
+
         collisions = pygame.sprite.Group()
         collisions.add(platforms)
         collisions.add(doors)
         collisions = pygame.sprite.spritecollide(self, platforms, False)
         if collisions != []:
             for collision in collisions:
-                if self.velocity.y > 0:
+                if self.velocity.y >= 0:
                     self.rect.bottom = collision.rect.top
                     self.velocity.y = 0
                     self.touching_ground = True
                 elif self.velocity.y < 0:
                     self.rect.top = collision.rect.bottom
                     self.velocity.y = 0
-                    self.touching_ground = False
 
         door_collisions = pygame.sprite.spritecollide(self, doors, False)
         if door_collisions != []:
@@ -101,6 +103,7 @@ class Player(Sprite):
                 else:
                     self.rect.top = door.rect.bottom
                     self.velocity.y = 0
+        print("velocity:",self.velocity.y,"\nground:",self.touching_ground)
 
     def jump(self):
         if self.touching_ground == True:
